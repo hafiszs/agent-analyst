@@ -1,0 +1,34 @@
+services:
+  # Builds the sandbox image once (agent-sandbox:latest) and exits.
+  sandbox-image:
+    build: ./sandbox-image
+    image: agent-sandbox:latest
+    entrypoint: [ "true" ]
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      WORK_DIR: /srv/agent-work
+    command: [ "uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
+    ports:
+      - "8000:8000"
+    volumes:
+      # The backend creates sibling sandbox containers through the host Docker daemon.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Same path on host and in the container: sandbox containers bind-mount from it.
+      - /srv/agent-work:/srv/agent-work
+      # Mount application code for live hot-reload without rebuild
+      - ./backend/app:/app/app
+    depends_on:
+      sandbox-image:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

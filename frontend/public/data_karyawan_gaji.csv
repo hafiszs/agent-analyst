@@ -1,0 +1,13 @@
+id_karyawan,nama_lengkap,divisi,jabatan,gaji_pokok,tunjangan,jam_lembur,status_kerja
+EMP001,Budi Santoso,Teknologi,Senior Backend Engineer,"Rp 18.500.000","Rp 2.500.000",14,Tetap
+EMP002,Siti Rahmawati,Marketing,Digital Marketing Specialist,"Rp 11.000.000","Rp 1.500.000",8,Tetap
+EMP003,Andi Wijaya,Operasional,Facility Supervisor,"Rp 8.500.000","Rp 1.000.000",22,Kontrak
+EMP004,Dewi Lestari,Keuangan,Senior Financial Analyst,"Rp 15.000.000","Rp 2.000.000",5,Tetap
+EMP005,Rian Hidayat,Teknologi,DevOps Engineer,"Rp 17.000.000","Rp 2.500.000",18,Tetap
+EMP006,Maya Putri,Marketing,Content Strategist,"Rp 9.500.000","Rp 1.200.000",10,Kontrak
+EMP007,Fajar Pratama,Operasional,Logistics Coordinator,"Rp 7.800.000","Rp 900.000",26,Kontrak
+EMP008,Agus Setiawan,Teknologi,Engineering Manager,"Rp 27.500.000","Rp 4.000.000",,Tetap
+EMP009,Nadia Safitri,Keuangan,Accounting Staff,"Rp 8.200.000","Rp 1.000.000",12,Tetap
+EMP010,Eko Prasetyo,Operasional,General Affair Staff,"Rp 7.000.000","Rp 800.000",15,Kontrak
+EMP011,Dina Mariana,Marketing,Head of Growth,"Rp 24.000.000","Rp 3.500.000",6,Tetap
+EMP012,Rizky Ramadhan,Teknologi,Frontend Developer,"Rp 13.500.000","Rp 1.800.000",16,Tetap
