@@ -597,6 +597,10 @@ export default function App() {
 
           case 'job_done':
             setIsAnalyzing(false);
+            if (sseCleanupRef.current) {
+              sseCleanupRef.current();
+              sseCleanupRef.current = null;
+            }
 
             // Re-fetch snapshot to ensure full report markdown and artifacts
             getJob(currentJobId).then((snapshot) => {
@@ -627,6 +631,10 @@ export default function App() {
 
           case 'job_failed':
             setIsAnalyzing(false);
+            if (sseCleanupRef.current) {
+              sseCleanupRef.current();
+              sseCleanupRef.current = null;
+            }
             return {
               ...msg,
               isStreaming: false,

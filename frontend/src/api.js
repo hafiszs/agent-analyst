@@ -21,11 +21,7 @@ export async function createJob(filesOrFile, query) {
     filesOrFile.forEach((f) => {
       formData.append('files', f);
     });
-    if (filesOrFile.length > 0) {
-      formData.append('file', filesOrFile[0]);
-    }
   } else if (filesOrFile) {
-    formData.append('file', filesOrFile);
     formData.append('files', filesOrFile);
   }
   formData.append('query', query);
@@ -70,7 +66,6 @@ export async function sendFollowUpMessage(jobId, query, newFiles = [], history =
     newFiles.forEach((f) => {
       formData.append('files', f);
     });
-    formData.append('file', newFiles[0]);
     res = await fetch(`${API_BASE}/jobs/${jobId}/messages`, {
       method: 'POST',
       body: formData,
@@ -133,11 +128,17 @@ export function subscribeJobEvents(jobId, onEvent, onError) {
     'job_failed',
   ];
 
+  let errorCount = 0;
+
   eventTypes.forEach((type) => {
     eventSource.addEventListener(type, (e) => {
       try {
+        errorCount = 0;
         const data = JSON.parse(e.data);
         onEvent({ type, ...data });
+        if (type === 'job_done' || type === 'job_failed') {
+          eventSource.close();
+        }
       } catch (err) {
         console.error('Error parsing SSE event data:', err);
       }
@@ -145,7 +146,12 @@ export function subscribeJobEvents(jobId, onEvent, onError) {
   });
 
   eventSource.onerror = (err) => {
+    errorCount += 1;
     console.warn('SSE connection notice:', err);
+    // If the server permanently closed the connection or if retries fail 3 times consecutively, stop reconnecting.
+    if (eventSource.readyState === EventSource.CLOSED || errorCount >= 3) {
+      eventSource.close();
+    }
     if (onError) onError(err);
   };
 

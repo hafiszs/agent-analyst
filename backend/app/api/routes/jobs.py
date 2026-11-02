@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 
 from ...schemas.job import (
@@ -111,9 +111,20 @@ def job_events(
 
     Supports reconnection via Last-Event-ID header and periodic keep-alive heartbeats.
     """
-    job = job_service.get_job_or_404(job_id)
+    try:
+        job = job_service.get_job_or_404(job_id)
+    except HTTPException:
+        # If job does not exist anymore (e.g. server restarted or job expired),
+        # return HTTP 204 No Content so browser EventSource immediately halts reconnecting.
+        return Response(status_code=204)
+
     last = request.headers.get("last-event-id", "")
     start = int(last) + 1 if last.isdigit() else 0
+
+    # If the job is already finished and all events have been streamed, return 204 No Content.
+    # Per W3C EventSource standard, HTTP 204 instructs the browser to permanently close the SSE connection without reconnecting.
+    if job.done and start >= len(job.events):
+        return Response(status_code=204)
 
     def gen():
         for item in job.iter_events(start):
